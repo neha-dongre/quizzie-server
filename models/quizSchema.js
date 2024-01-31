@@ -6,10 +6,10 @@ const optionSchema = new mongoose.Schema({
 });
 
 const questionSchema = new mongoose.Schema({
-  pollQuestion: { type: Object, required: true },
+  question: { type: Object, required: true },
   ansOption: { type: Object, required: true },
   options: [[optionSchema]],
-  timerType: { type: Object,},
+  timerType: { type: Object },
 });
 
 const quizSchema = new mongoose.Schema({
@@ -17,9 +17,9 @@ const quizSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   impressions: { type: Number, default: 0 },
   quizName: { type: String, required: true },
-  quizType: { type: String, required: true },
+  quizType: { type: String, required: true, enum: ["Poll Type", "Quiz Type"] },
   correctAnswers: { type: Object, default: {} },
-  questions: [questionSchema],
+  questions: { type: [questionSchema], default: () => [] },
 });
 
 module.exports = mongoose.model("Quiz", quizSchema);

@@ -1,29 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const Quiz = require("../models/quiz.js");
+const Quiz = require("../models/quizSchema.js");
 
-// Analytics tab api
+// Analytics tab API
 router.get("/quizzes", async (req, res) => {
   try {
     const { email } = req.query;
     const quizzes = await Quiz.find({ email });
-    res.json(quizzes);
+    res.json({ data: quizzes });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred", error: error.message });
+    console.error("Error fetching quizzes:", error);
+    res.status(500).json({ error: "An error occurred while fetching quizzes" });
   }
 });
 
-//for quizData in dashboard Screen
+// For quizData in the dashboard Screen
 router.get("/userData", async (req, res) => {
-  const { email } = req.query;
-
   try {
-    // Find all quizzes created by the user
-    const quizzes = await Quiz.find({ email: email });
+    const { email } = req.query;
+    const quizzes = await Quiz.find({ email });
 
-    // Calculate total quizzes, questions, and impressions
     const totalQuizzes = quizzes.length;
     const totalQuestions = quizzes.reduce((sum, quiz) => {
       return (
@@ -39,9 +35,11 @@ router.get("/userData", async (req, res) => {
     );
 
     res.json({
-      quizzes: totalQuizzes,
-      questions: totalQuestions,
-      impressions: totalImpressions,
+      data: {
+        quizzes: totalQuizzes,
+        questions: totalQuestions,
+        impressions: totalImpressions,
+      },
     });
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -51,17 +49,16 @@ router.get("/userData", async (req, res) => {
   }
 });
 
+// Trending Quizzes API
 router.get("/trendingQuizzes", async (req, res) => {
-  const { email } = req.query;
-
   try {
-    // Find top 6 quizzes created by the user, sorted by impressions in descending order
-    const quizzes = await Quiz.find({ email: email })
+    const { email } = req.query;
+    const trendingQuizzes = await Quiz.find({ email })
       .sort({ impressions: -1 })
       .limit(6)
       .select("quizName impressions date");
 
-    res.json(quizzes);
+    res.json({ data: trendingQuizzes });
   } catch (error) {
     console.error("Error fetching trending quizzes:", error);
     res
