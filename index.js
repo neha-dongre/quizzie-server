@@ -14,7 +14,7 @@ app.use(express.static("./public"));
 
 
 const corsOptions = {
-  origin: ['https://quizzie-client.onrender.com', 'http://localhost:3000'],
+  origin: ['https://quizzie-client.onrender.com','https://quizzie-client-mu.vercel.app' ,'http://localhost:3000'],
   credentials: true,
   optionSuccessStatus: 200,
 };
